@@ -1,6 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
+import MovieModal from "./MovieModal";
 
 function Favorites({ favorites, toggleFavorite, isFavorite }) {
+  const [selectedMovie, setSelectedMovie] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+
   return (
     <div className="container py-5">
       <h1 className="text-center mb-4">⭐ Favori Filmler</h1>
@@ -29,12 +33,27 @@ function Favorites({ favorites, toggleFavorite, isFavorite }) {
                   >
                     Favoriden Kaldır
                   </button>
+                  <button
+                    className="btn btn-info btn-sm mt-2"
+                    onClick={() => {
+                      setSelectedMovie(movie);
+                      setShowModal(true);
+                    }}
+                  >
+                    Detaylar
+                  </button>
                 </div>
               </div>
             </div>
           ))
         )}
       </div>
+
+      <MovieModal
+        show={showModal}
+        onHide={() => setShowModal(false)}
+        movie={selectedMovie}
+      />
     </div>
   );
 }
