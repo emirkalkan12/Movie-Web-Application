@@ -4,8 +4,10 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+
 import HomePage from "./pages/HomePage";
 import FavoritesPage from "./pages/FavoritesPage";
+import WatchedPage from "./pages/WatchedPage";
 import MovieDetailsModal from "./components/MovieDetailsModal";
 
 function App() {
@@ -103,6 +105,9 @@ function App() {
               <li className="nav-item">
                 <Link className="nav-link" to="/favorites">Favoriler</Link>
               </li>
+              <li className="nav-item">
+                <Link className="nav-link" to="/watched">İzlenenler</Link>
+              </li>
             </ul>
           </div>
         </div>
@@ -132,6 +137,18 @@ function App() {
                 toggleWatched={toggleWatched}
                 ratings={ratings}
                 rateMovie={rateMovie}
+              />
+            }
+          />
+          <Route
+            path="/watched"
+            element={
+              <WatchedPage
+                watchedMovies={favorites.filter(movie => watchedMovies.includes(movie.id))}
+                isFavorite={isFavorite}
+                onToggleFavorite={toggleFavorite}
+                onOpenDetails={handleOpenDetails}
+                ratings={ratings}
               />
             }
           />
