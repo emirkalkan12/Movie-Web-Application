@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min";
-
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import HomePage from "./pages/HomePage";
 import FavoritesPage from "./pages/FavoritesPage";
 import MovieDetailsModal from "./components/MovieDetailsModal";
@@ -50,11 +51,14 @@ function App() {
   }, [ratings]);
 
   const toggleFavorite = (movie) => {
-    setFavorites((prev) => {
-      return prev.some((fav) => fav.id === movie.id)
-        ? prev.filter((fav) => fav.id !== movie.id)
-        : [...prev, movie];
-    });
+    const exists = favorites.find((fav) => fav.id === movie.id);
+    if (exists) {
+      setFavorites(favorites.filter((fav) => fav.id !== movie.id));
+      toast.info(`${movie.title} favorilerden kaldırıldı.`);
+    } else {
+      setFavorites([...favorites, movie]);
+      toast.success(`${movie.title} favorilere eklendi.`);
+    }
   };
 
   const isFavorite = (id) => favorites.some((fav) => fav.id === id);
@@ -104,7 +108,7 @@ function App() {
         </div>
       </nav>
 
-      <main>
+      <main className="container my-4">
         <Routes>
           <Route
             path="/"
@@ -146,10 +150,10 @@ function App() {
           rateMovie={(rating) => rateMovie(selectedMovie.id, rating)}
         />
       )}
+
+      <ToastContainer position="bottom-right" autoClose={3000} hideProgressBar />
     </Router>
   );
 }
 
 export default App;
-// App.js dosyası, uygulamanın ana bileşenini içerir ve yönlendirme, durum yönetimi ve modal açma/kapama işlevlerini yönetir.
-// Uygulama, ana sayfa ve favori filmler sayfası arasında geçiş yapar. Ayrıca, film detayları için bir modal bileşeni kullanır.
