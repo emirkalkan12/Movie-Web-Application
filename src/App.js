@@ -1,134 +1,219 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
-import "bootstrap/dist/css/bootstrap.min.css";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
-import Favorites from "./favorites";
+import "bootstrap/dist/css/bootstrap.min.css"; // Bootstrap CSS
+import "bootstrap/dist/js/bootstrap.bundle.min"; // Bootstrap JS (Modal, dropdown vb. için)
+// İkonlar için Lucide React'i kullanacaksak import etmeliyiz
+// import { Film } from "lucide-react";
+
+import HomePage from "./pages/HomePage"; // Ana sayfa bileşeni
+import FavoritesPage from "./pages/FavoritesPage"; // Favoriler sayfası bileşeni
+import MovieDetailsModal from "./components/MovieDetailsModal"; // Modal bileşeni
 
 function App() {
-  const [query, setQuery] = useState("");
-  const [movies, setMovies] = useState([]);
+  // Favori filmler state'i - localStorage'dan başlat
   const [favorites, setFavorites] = useState(() => {
     const stored = localStorage.getItem("favorites");
-    return stored ? JSON.parse(stored) : [];
+    try {
+      return stored ? JSON.parse(stored) : [];
+    } catch (error) {
+      console.error("Failed to parse favorites from localStorage:", error);
+      return [];
+    }
   });
 
-  const apiKey = process.env.REACT_APP_TMDB_API_KEY;
-
-  useEffect(() => {
-    if (query.trim() === "") {
-      setMovies([]);
-      return;
+  // İzlenmiş filmler state'i - localStorage'dan başlat
+  const [watchedMovies, setWatchedMovies] = useState(() => {
+    const saved = localStorage.getItem("watchedMovies");
+    try {
+      return saved ? JSON.parse(saved) : [];
+    } catch (error) {
+      console.error("Failed to parse watchedMovies from localStorage:", error);
+      return [];
     }
+  });
 
-    const fetchMovies = async () => {
-      try {
-        const response = await axios.get(
-          `https://api.themoviedb.org/3/search/movie?api_key=${apiKey}&query=${query}`
-        );
-        setMovies(response.data.results);
-      } catch (error) {
-        console.error("API Error:", error);
-      }
-    };
+  // Film puanları state'i - localStorage'dan başlat
+  const [ratings, setRatings] = useState(() => {
+    const saved = localStorage.getItem("movieRatings");
+    try {
+      return saved ? JSON.parse(saved) : {};
+    } catch (error) {
+      console.error("Failed to parse movieRatings from localStorage:", error);
+      return {};
+    }
+  });
 
-    fetchMovies();
-  }, [query]);
+  // Detayları gösterilecek film state'i (modal için)
+  const [selectedMovie, setSelectedMovie] = useState(null);
 
+  // Favoriler state'i değiştiğinde localStorage'a kaydet
   useEffect(() => {
     localStorage.setItem("favorites", JSON.stringify(favorites));
   }, [favorites]);
 
+  // İzlenmiş filmler state'i değiştiğinde localStorage'a kaydet
+  useEffect(() => {
+    localStorage.setItem("watchedMovies", JSON.stringify(watchedMovies));
+  }, [watchedMovies]);
+
+  // Puanlar state'i değiştiğinde localStorage'a kaydet
+  useEffect(() => {
+    localStorage.setItem("movieRatings", JSON.stringify(ratings));
+  }, [ratings]);
+
+  // Bir filmi favorilere ekleme veya çıkarma fonksiyonu
   const toggleFavorite = (movie) => {
     const exists = favorites.find((fav) => fav.id === movie.id);
     if (exists) {
       setFavorites(favorites.filter((fav) => fav.id !== movie.id));
+      // Favoriden çıkarınca izlendi ve puan bilgisini de temizleyebiliriz (isteğe bağlı)
+      // toggleWatched(movie.id, false); // İzlendi işaretini kaldır
+      // rateMovie(movie.id, 0); // Puanı sıfırla
     } else {
       setFavorites([...favorites, movie]);
     }
   };
 
+  // Bir filmin favoride olup olmadığını kontrol etme fonksiyonu
   const isFavorite = (id) => favorites.some((fav) => fav.id === id);
+
+  // Bir filmi izlendi olarak işaretleme/işaretini kaldırma fonksiyonu
+  const toggleWatched = (movieId, setStatus = undefined) => {
+    setWatchedMovies((prevWatched) => {
+      const isCurrentlyWatched = prevWatched.includes(movieId);
+      let updatedWatched;
+
+      if (setStatus === true) {
+        // Explicitly set as watched
+        updatedWatched = isCurrentlyWatched
+          ? prevWatched
+          : [...prevWatched, movieId];
+      } else if (setStatus === false) {
+        // Explicitly set as unwatched
+        updatedWatched = prevWatched.filter((id) => id !== movieId);
+      } else {
+        // Toggle
+        updatedWatched = isCurrentlyWatched
+          ? prevWatched.filter((id) => id !== movieId)
+          : [...prevWatched, movieId];
+      }
+      return updatedWatched;
+    });
+  };
+
+  // Bir filme puan verme fonksiyonu
+  const rateMovie = (movieId, rating) => {
+    setRatings((prevRatings) => {
+      const updatedRatings = { ...prevRatings, [movieId]: rating };
+      return updatedRatings;
+    });
+  };
+
+  // Modal açma fonksiyonu - hangi filmin detaylarının gösterileceğini ayarlar
+  const handleOpenDetails = (movie) => {
+    setSelectedMovie(movie);
+  };
+
+  // Modal kapatma fonksiyonu - selectedMovie state'ini sıfırlar
+  const handleCloseDetails = () => {
+    setSelectedMovie(null);
+  };
 
   return (
     <Router>
+      {/* Navbar */}
       <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
         <div className="container">
-          <Link className="navbar-brand" to="/">🎬 MovieApp</Link>
-          <div className="collapse navbar-collapse">
+          {/* İkon kullanmak için Lucide React kurulu olmalı */}
+          <Link className="navbar-brand" to="/">
+            {/* <Film className="inline-block mr-2 w-6 h-6 text-blue-500" /> */}
+            🎬 MovieApp
+          </Link>
+          <button
+            className="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarNav"
+            aria-controls="navbarNav"
+            aria-expanded="false"
+            aria-label="Toggle navigation"
+          >
+            <span className="navbar-toggler-icon"></span>
+          </button>
+          <div className="collapse navbar-collapse" id="navbarNav">
             <ul className="navbar-nav ms-auto">
               <li className="nav-item">
-                <Link className="nav-link" to="/">Ana Sayfa</Link>
+                <Link className="nav-link" to="/">
+                  Ana Sayfa
+                </Link>
               </li>
               <li className="nav-item">
-                <Link className="nav-link" to="/favorites">Favoriler</Link>
+                <Link className="nav-link" to="/favorites">
+                  Favoriler
+                </Link>
               </li>
             </ul>
           </div>
         </div>
       </nav>
 
-      <Routes>
-        <Route path="/" element={
-          <div className="container py-5">
-            <h1 className="text-center mb-4">🎬 Film Arama</h1>
-            <div className="row mb-5">
-              <div className="col-md-6 offset-md-3">
-                <input
-                  type="text"
-                  className="form-control"
-                  placeholder="Bir film adı girin..."
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                />
-              </div>
-            </div>
-
-            <div className="row">
-              {movies.map((movie) => (
-                <div key={movie.id} className="col-md-3 mb-4">
-                  <div className="card h-100 shadow-sm d-flex flex-column">
-                    <img
-                      src={
-                        movie.poster_path
-                          ? `https://image.tmdb.org/t/p/w300${movie.poster_path}`
-                          : "https://via.placeholder.com/300x450?text=No+Image"
-                      }
-                      className="card-img-top"
-                      alt={movie.title}
-                    />
-                    <div className="card-body d-flex flex-column">
-                      <h5 className="card-title">{movie.title}</h5>
-                      <p className="card-text text-muted">{movie.release_date}</p>
-                      <button
-                        className={`btn btn-sm mt-auto ${
-                          isFavorite(movie.id)
-                            ? "btn-danger"
-                            : "btn-outline-primary"
-                        }`}
-                        onClick={() => toggleFavorite(movie)}
-                      >
-                        {isFavorite(movie.id)
-                          ? "Favoriden Kaldır"
-                          : "Favorilere Ekle"}
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        } />
-        
-        <Route path="/favorites" element={
-          <Favorites
-            favorites={favorites}
-            toggleFavorite={toggleFavorite}
-            isFavorite={isFavorite}
+      {/* Sayfa İçerikleri */}
+      <main>
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <HomePage
+                isFavorite={isFavorite}
+                onToggleFavorite={toggleFavorite}
+                onOpenDetails={handleOpenDetails}
+                // HomePage'de izlendi/puan göstermeyeceksek bu proplara gerek yok
+                // watchedMovies={watchedMovies}
+                // ratings={ratings}
+                // toggleWatched={toggleWatched}
+                // rateMovie={rateMovie}
+              />
+            }
           />
-        } />
-      </Routes>
+
+          <Route
+            path="/favorites"
+            element={
+              <FavoritesPage
+                favorites={favorites} // App.js'den favori listesini iletiyoruz
+                isFavorite={isFavorite} // Favori kontrol fonksiyonunu iletiyoruz
+                onToggleFavorite={toggleFavorite} // Favoriden çıkarma fonksiyonunu iletiyoruz
+                onOpenDetails={handleOpenDetails} // Modal açma fonksiyonunu iletiyoruz
+                watchedMovies={watchedMovies} // İzlenmiş filmler listesini iletiyoruz
+                toggleWatched={toggleWatched} // İzlendi durumunu değiştirme fonksiyonunu iletiyoruz
+                ratings={ratings} // Puanlar objesini iletiyoruz
+                rateMovie={rateMovie} // Puan verme fonksiyonunu iletiyoruz
+              />
+            }
+          />
+        </Routes>
+      </main>
+
+      {/* Film Detayları Modalı - selectedMovie state'ine bağlı olarak görünür */}
+      {selectedMovie && (
+        <MovieDetailsModal
+          movie={selectedMovie}
+          onClose={handleCloseDetails}
+          isFavorite={isFavorite} // Modal içinde favori durumunu göstermek için
+          onToggleFavorite={toggleFavorite} // Modal içinden favori yönetimi için
+          isWatched={watchedMovies.includes(selectedMovie.id)} // Modal için izlendi bilgisi
+          toggleWatched={(status) => toggleWatched(selectedMovie.id, status)} // Modal içinden izlendi yönetimi için (true/false/undefined)
+          userRating={ratings[selectedMovie.id] || 0} // Modal için kullanıcının verdiği puan
+          rateMovie={(rating) => rateMovie(selectedMovie.id, rating)} // Modal içinden puan verme için
+        />
+      )}
     </Router>
   );
 }
 
 export default App;
+// App.js dosyası, uygulamanın ana bileşenidir ve tüm sayfaları ve bileşenleri içerir.
+// Ana sayfa ve favoriler sayfası için yönlendirme ve modal bileşenini içerir.
+// Ayrıca, favori filmleri, izlendi filmleri ve puanları yönetmek için gerekli state'leri ve fonksiyonları içerir.
+// Bu yapı, uygulamanın temel işlevselliğini sağlar ve kullanıcıların filmleri aramasına, favorilere eklemesine ve detaylarını görüntülemesine olanak tanır.
+// Uygulama, React Router kullanarak sayfalar arasında geçiş yapar ve Bootstrap ile stilize edilmiştir.
