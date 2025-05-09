@@ -1,13 +1,13 @@
-import React from 'react';
-import MovieCard from '../components/MovieCard';
+import React from "react";
+import MovieCard from "../components/MovieCard";
 
 const WatchedPage = ({
   watchedMovies,
   isFavorite,
   onToggleFavorite,
   onOpenDetails,
-  toggleWatched, // ✅ EKLENDİ
-  ratings
+  toggleWatched,
+  ratings,
 }) => {
   return (
     <div className="container py-5">
@@ -16,7 +16,7 @@ const WatchedPage = ({
         <p className="text-muted text-center">Henüz izlenen film yok.</p>
       ) : (
         <div className="row">
-          {watchedMovies.map(movie => (
+          {watchedMovies.map((movie) => (
             <div key={movie.id} className="col-md-3 mb-4">
               <MovieCard
                 movie={movie}
@@ -25,7 +25,7 @@ const WatchedPage = ({
                 onOpenDetails={onOpenDetails}
                 isWatched={true}
                 userRating={ratings[movie.id] || 0}
-                toggleWatched={toggleWatched} 
+                toggleWatched={toggleWatched}
               />
             </div>
           ))}
