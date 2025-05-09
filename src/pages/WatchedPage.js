@@ -1,7 +1,14 @@
 import React from 'react';
 import MovieCard from '../components/MovieCard';
 
-const WatchedPage = ({ watchedMovies, favorites, isFavorite, onToggleFavorite, onOpenDetails, ratings }) => {
+const WatchedPage = ({
+  watchedMovies,
+  isFavorite,
+  onToggleFavorite,
+  onOpenDetails,
+  toggleWatched, // ✅ EKLENDİ
+  ratings
+}) => {
   return (
     <div className="container py-5">
       <h1 className="text-center mb-4">👁️ İzlenen Filmler</h1>
@@ -18,6 +25,7 @@ const WatchedPage = ({ watchedMovies, favorites, isFavorite, onToggleFavorite, o
                 onOpenDetails={onOpenDetails}
                 isWatched={true}
                 userRating={ratings[movie.id] || 0}
+                toggleWatched={toggleWatched} 
               />
             </div>
           ))}
@@ -28,5 +36,3 @@ const WatchedPage = ({ watchedMovies, favorites, isFavorite, onToggleFavorite, o
 };
 
 export default WatchedPage;
-// Bu bileşen, izlenen filmleri listelemek için kullanılır. Eğer izlenen film yoksa, kullanıcıya bir mesaj gösterir.
-// İzlenen filmler varsa, her bir film için MovieCard bileşenini kullanarak film kartlarını oluşturur.

@@ -65,14 +65,18 @@ function App() {
 
   const isFavorite = (id) => favorites.some((fav) => fav.id === id);
 
-  const toggleWatched = (movieId, setStatus = undefined) => {
-    setWatchedMovies((prev) => {
-      const isWatched = prev.includes(movieId);
-      if (setStatus === true) return isWatched ? prev : [...prev, movieId];
-      if (setStatus === false) return prev.filter((id) => id !== movieId);
-      return isWatched ? prev.filter((id) => id !== movieId) : [...prev, movieId];
-    });
+  const toggleWatched = (movie) => {
+    const exists = watchedMovies.find((m) => m.id === movie.id);
+    if (exists) {
+      setWatchedMovies(watchedMovies.filter((m) => m.id !== movie.id));
+      toast.info(`${movie.title} izlendi listesinden çıkarıldı.`);
+    } else {
+      setWatchedMovies([...watchedMovies, movie]);
+      toast.success(`${movie.title} izlendi listesine eklendi.`);
+    }
   };
+
+  const isWatched = (id) => watchedMovies.some((m) => m.id === id);
 
   const rateMovie = (movieId, rating) => {
     setRatings((prev) => ({ ...prev, [movieId]: rating }));
@@ -122,6 +126,9 @@ function App() {
                 isFavorite={isFavorite}
                 onToggleFavorite={toggleFavorite}
                 onOpenDetails={handleOpenDetails}
+                isWatched={isWatched}
+                toggleWatched={toggleWatched}
+                ratings={ratings}
               />
             }
           />
@@ -144,11 +151,14 @@ function App() {
             path="/watched"
             element={
               <WatchedPage
-                watchedMovies={favorites.filter(movie => watchedMovies.includes(movie.id))}
+                watchedMovies={watchedMovies}
                 isFavorite={isFavorite}
                 onToggleFavorite={toggleFavorite}
                 onOpenDetails={handleOpenDetails}
+                isWatched={isWatched}
+                toggleWatched={toggleWatched}
                 ratings={ratings}
+                rateMovie={rateMovie}
               />
             }
           />
@@ -161,8 +171,8 @@ function App() {
           onClose={handleCloseDetails}
           isFavorite={isFavorite}
           onToggleFavorite={toggleFavorite}
-          isWatched={watchedMovies.includes(selectedMovie.id)}
-          toggleWatched={(status) => toggleWatched(selectedMovie.id, status)}
+          isWatched={isWatched(selectedMovie.id)}
+          toggleWatched={() => toggleWatched(selectedMovie)}
           userRating={ratings[selectedMovie.id] || 0}
           rateMovie={(rating) => rateMovie(selectedMovie.id, rating)}
         />

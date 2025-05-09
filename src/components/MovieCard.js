@@ -1,6 +1,6 @@
 import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Star, X, Info, Heart } from "lucide-react";
+import { Star, X, Info, Heart, Eye, EyeOff } from "lucide-react";
 
 const MovieCard = ({
   movie,
@@ -8,6 +8,7 @@ const MovieCard = ({
   onToggleFavorite,
   onOpenDetails,
   isWatched,
+  toggleWatched,
   userRating
 }) => {
   const posterUrl = movie.poster_path
@@ -49,7 +50,7 @@ const MovieCard = ({
         </p>
 
         {/* Butonlar */}
-        <div className="mt-auto pt-3 d-flex gap-2">
+        <div className="mt-auto pt-3 d-flex flex-wrap gap-2">
           <button
             className="btn btn-outline-primary btn-sm flex-grow-1"
             onClick={() => onOpenDetails(movie)}
@@ -64,6 +65,14 @@ const MovieCard = ({
             title={favorite ? "Favoriden Kaldır" : "Favorilere Ekle"}
           >
             {favorite ? <X size={16} /> : <Heart size={16} />}
+          </button>
+
+          <button
+            className={`btn btn-sm ${isWatched ? "btn-success" : "btn-outline-secondary"}`}
+            onClick={() => toggleWatched(movie)}
+            title={isWatched ? "İzlendi olarak işaretlendi" : "İzlenmedi olarak işaretlendi"}
+          >
+            {isWatched ? <Eye size={16} /> : <EyeOff size={16} />}
           </button>
         </div>
       </div>
