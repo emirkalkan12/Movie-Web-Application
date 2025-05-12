@@ -2,12 +2,13 @@ import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import HomePage from "./pages/HomePage";
 import FavoritesPage from "./pages/FavoritesPage";
 import WatchedPage from "./pages/WatchedPage";
+import DiscoverPage from "./pages/DiscoverPage"; // DiscoverPage eklendi
 import MovieDetailsModal from "./components/MovieDetailsModal";
 
 function App() {
@@ -112,6 +113,9 @@ function App() {
               <li className="nav-item">
                 <Link className="nav-link" to="/watched">İzlenenler</Link>
               </li>
+              <li className="nav-item">
+                <Link className="nav-link" to="/discover">Keşfet</Link>
+              </li>
             </ul>
           </div>
         </div>
@@ -162,6 +166,19 @@ function App() {
               />
             }
           />
+          <Route
+            path="/discover"
+            element={
+              <DiscoverPage
+                isFavorite={isFavorite}
+                onToggleFavorite={toggleFavorite}
+                onOpenDetails={handleOpenDetails}
+                isWatched={isWatched}
+                toggleWatched={toggleWatched}
+                ratings={ratings}
+              />
+            }
+          />
         </Routes>
       </main>
 
@@ -169,8 +186,8 @@ function App() {
         <MovieDetailsModal
           movie={selectedMovie}
           onClose={handleCloseDetails}
-          isFavorite={isFavorite}
-          onToggleFavorite={toggleFavorite}
+          isFavorite={isFavorite(selectedMovie.id)}
+          onToggleFavorite={() => toggleFavorite(selectedMovie)}
           isWatched={isWatched(selectedMovie.id)}
           toggleWatched={() => toggleWatched(selectedMovie)}
           userRating={ratings[selectedMovie.id] || 0}
