@@ -204,12 +204,16 @@ function App() {
           </div>
         </nav>
 
-        {/* Statistics Dashboard */}
+        {/* Statistics Dashboard - Moved here to be outside of main content */}
         {showStats && (
-          <StatsDashboard 
-            stats={stats} 
-            onClose={() => setShowStats(false)}
-          />
+          <div className="position-fixed top-0 start-0 w-100 h-100 bg-dark bg-opacity-50 d-flex justify-content-center align-items-center" style={{ zIndex: 1050 }}>
+            <div className="container">
+              <StatsDashboard 
+                stats={stats} 
+                onClose={() => setShowStats(false)}
+              />
+            </div>
+          </div>
         )}
 
         <main className="container my-4">
