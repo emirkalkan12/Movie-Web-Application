@@ -1,10 +1,11 @@
 import React from 'react';
-import { X, Clock, Heart, Star, Film, TrendingUp, BarChart, PieChart } from 'lucide-react';
+import { X, Clock, Heart, Star, Film, TrendingUp, BarChart, PieChart, ListChecks } from 'lucide-react';
 
 const StatsDashboard = ({ stats, onClose }) => {
   const { 
     totalMovies, 
-    totalFavorites, 
+    totalFavorites,
+    totalWatchlist,
     totalWatchTime, 
     totalRated, 
     averageRating,
@@ -47,42 +48,65 @@ const StatsDashboard = ({ stats, onClose }) => {
         <div className="card-body">
           {/* Main Stats Cards */}
           <div className="row mb-4">
-            <div className="col-md-3 mb-3 mb-md-0">
+            <div className="col-lg-3 col-md-6 mb-3 mb-lg-0">
               <div className="card h-100 border-0 bg-light">
                 <div className="card-body text-center">
                   <Film size={32} className="text-primary mb-2" />
                   <h5 className="card-title">{totalMovies}</h5>
-                  <p className="card-text text-muted">İzlenen Film</p>
+                  <p className="card-text text-dark fw-semibold">İzlenen Film</p>
                 </div>
               </div>
             </div>
             
-            <div className="col-md-3 mb-3 mb-md-0">
+            <div className="col-lg-3 col-md-6 mb-3 mb-lg-0">
               <div className="card h-100 border-0 bg-light">
                 <div className="card-body text-center">
                   <Heart size={32} className="text-danger mb-2" />
                   <h5 className="card-title">{totalFavorites}</h5>
-                  <p className="card-text text-muted">Favori Film</p>
+                  <p className="card-text text-dark fw-semibold">Favori Film</p>
                 </div>
               </div>
             </div>
             
-            <div className="col-md-3 mb-3 mb-md-0">
+            <div className="col-lg-3 col-md-6 mb-3 mb-lg-0">
               <div className="card h-100 border-0 bg-light">
                 <div className="card-body text-center">
-                  <Clock size={32} className="text-success mb-2" />
-                  <h5 className="card-title">{formatWatchTime(totalWatchTime)}</h5>
-                  <p className="card-text text-muted">Toplam İzleme Süresi</p>
+                  <ListChecks size={32} className="text-primary mb-2" />
+                  <h5 className="card-title">{totalWatchlist}</h5>
+                  <p className="card-text text-dark fw-semibold">İzleme Listesindeki</p>
                 </div>
               </div>
             </div>
             
-            <div className="col-md-3">
+            <div className="col-lg-3 col-md-6">
               <div className="card h-100 border-0 bg-light">
                 <div className="card-body text-center">
                   <Star size={32} className="text-warning mb-2" />
                   <h5 className="card-title">{averageRating}/10</h5>
-                  <p className="card-text text-muted">Ortalama Puanınız</p>
+                  <p className="card-text text-dark fw-semibold">Ortalama Puanınız</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          {/* Second row of stats */}
+          <div className="row mb-4">
+            <div className="col-md-6 mb-3 mb-md-0">
+              <div className="card h-100 border-0 bg-light">
+                <div className="card-body text-center">
+                  <Clock size={32} className="text-success mb-2" />
+                  <h5 className="card-title">{formatWatchTime(totalWatchTime)}</h5>
+                  <p className="card-text text-dark fw-semibold">Toplam İzleme Süresi</p>
+                </div>
+              </div>
+            </div>
+            
+            <div className="col-md-6">
+              <div className="card h-100 border-0 bg-light">
+                <div className="card-body text-center">
+                  <BarChart size={32} className="text-info mb-2" />
+                  <h5 className="card-title">{totalRated}</h5>
+                  <p className="card-text text-dark fw-semibold">Puanlandırdığınız Film</p>
                 </div>
               </div>
             </div>
@@ -131,7 +155,7 @@ const StatsDashboard = ({ stats, onClose }) => {
                       ))}
                     </div>
                   ) : (
-                    <p className="text-muted text-center my-4">
+                    <p className="text-dark fw-semibold text-center my-4">
                       Henüz yeterli film izlenmemiş.
                     </p>
                   )}
@@ -163,18 +187,21 @@ const StatsDashboard = ({ stats, onClose }) => {
                       <p className="mb-3">
                         <strong>Puanlandırma Oranı:</strong> {totalMovies > 0 ? Math.round((totalRated / totalMovies) * 100) : 0}%
                       </p>
+                      <p className="mb-3">
+                        <strong>İzleme Listesinden Tamamlama Oranı:</strong> {totalWatchlist + totalMovies > 0 ? Math.round((totalMovies / (totalWatchlist + totalMovies)) * 100) : 0}%
+                      </p>
                     </div>
                     
                     {totalMovies === 0 ? (
-                      <div className="alert alert-info text-center mb-0">
+                      <div className="alert alert-primary text-center mb-0 fw-semibold">
                         <p className="mb-0">Film izleme istatistiklerinizi görmek için film izlemeye başlayın!</p>
                       </div>
                     ) : totalMovies < 5 ? (
-                      <div className="alert alert-info text-center mb-0">
+                      <div className="alert alert-primary text-center mb-0 fw-semibold">
                         <p className="mb-0">Daha detaylı istatistikler için daha fazla film izleyin.</p>
                       </div>
                     ) : (
-                      <div className="alert alert-success text-center mb-0">
+                      <div className="alert alert-success text-center mb-0 fw-semibold">
                         <p className="mb-0">Tebrikler! {totalMovies} film izleyerek film tutkunları arasına girdiniz!</p>
                       </div>
                     )}

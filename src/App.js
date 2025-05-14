@@ -4,13 +4,14 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { Home, Heart, Film, Compass, Tv, TrendingUp, Search, Menu } from "lucide-react";
+import { Home, Heart, Film, Compass, Tv, TrendingUp, Search, Menu, ListChecks } from "lucide-react";
 import './App.css';
 
 import HomePage from "./pages/HomePage";
 import FavoritesPage from "./pages/FavoritesPage";
 import WatchedPage from "./pages/WatchedPage";
 import DiscoverPage from "./pages/DiscoverPage";
+import WatchlistPage from "./pages/WatchlistPage";
 import MovieDetailsModal from "./components/MovieDetailsModal";
 import StatsDashboard from "./components/StatsDashboard";
 
@@ -26,6 +27,15 @@ function App() {
 
   const [watchedMovies, setWatchedMovies] = useState(() => {
     const stored = localStorage.getItem("watchedMovies");
+    try {
+      return stored ? JSON.parse(stored) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  const [watchlist, setWatchlist] = useState(() => {
+    const stored = localStorage.getItem("watchlist");
     try {
       return stored ? JSON.parse(stored) : [];
     } catch {
@@ -58,6 +68,10 @@ function App() {
   }, [watchedMovies]);
 
   useEffect(() => {
+    localStorage.setItem("watchlist", JSON.stringify(watchlist));
+  }, [watchlist]);
+
+  useEffect(() => {
     localStorage.setItem("movieRatings", JSON.stringify(ratings));
   }, [ratings]);
 
@@ -87,10 +101,40 @@ function App() {
     } else {
       setWatchedMovies([...watchedMovies, movie]);
       toast.success(`${movie.title} izlendi listesine eklendi.`);
+      // İzlendi olarak işaretlenince izleme listesinden kaldır
+      if (isInWatchlist(movie.id)) {
+        removeFromWatchlist(movie);
+      }
     }
   };
 
   const isWatched = (id) => watchedMovies.some((m) => m.id === id);
+
+  const toggleWatchlist = (movie) => {
+    const exists = watchlist.find((m) => m.id === movie.id);
+    if (exists) {
+      removeFromWatchlist(movie);
+    } else {
+      addToWatchlist(movie);
+    }
+  };
+
+  const addToWatchlist = (movie) => {
+    if (isWatched(movie.id)) {
+      toast.info(`${movie.title} zaten izlendi olarak işaretlenmiş.`);
+      return;
+    }
+    
+    setWatchlist([...watchlist, movie]);
+    toast.success(`${movie.title} izleme listesine eklendi.`);
+  };
+
+  const removeFromWatchlist = (movie) => {
+    setWatchlist(watchlist.filter((m) => m.id !== movie.id));
+    toast.info(`${movie.title} izleme listesinden kaldırıldı.`);
+  };
+
+  const isInWatchlist = (id) => watchlist.some((m) => m.id === id);
 
   const rateMovie = (movieId, rating) => {
     setRatings((prev) => ({ ...prev, [movieId]: rating }));
@@ -128,6 +172,7 @@ function App() {
     totalFavorites: favorites.length,
     totalWatchTime,
     totalRated: Object.keys(ratings).length,
+    totalWatchlist: watchlist.length,
     averageRating: Object.values(ratings).length 
       ? (Object.values(ratings).reduce((acc, val) => acc + val, 0) / Object.values(ratings).length).toFixed(1)
       : 0,
@@ -165,6 +210,14 @@ function App() {
                 <li className="nav-item">
                   <NavLink className={({isActive}) => `nav-link d-flex align-items-center gap-2 ${isActive ? 'active fw-bold' : ''}`} to="/discover">
                     <Compass size={18} /> Keşfet
+                  </NavLink>
+                </li>
+                <li className="nav-item">
+                  <NavLink className={({isActive}) => `nav-link d-flex align-items-center gap-2 ${isActive ? 'active fw-bold' : ''}`} to="/watchlist">
+                    <ListChecks size={18} /> İzleme Listesi
+                    {watchlist.length > 0 && (
+                      <span className="badge bg-primary rounded-pill">{watchlist.length}</span>
+                    )}
                   </NavLink>
                 </li>
                 <li className="nav-item">
@@ -227,6 +280,8 @@ function App() {
                   onOpenDetails={handleOpenDetails}
                   isWatched={isWatched}
                   toggleWatched={toggleWatched}
+                  isInWatchlist={isInWatchlist}
+                  toggleWatchlist={toggleWatchlist}
                   ratings={ratings}
                 />
               }
@@ -241,6 +296,8 @@ function App() {
                   onOpenDetails={handleOpenDetails}
                   watchedMovies={watchedMovies}
                   toggleWatched={toggleWatched}
+                  isInWatchlist={isInWatchlist}
+                  toggleWatchlist={toggleWatchlist}
                   ratings={ratings}
                   rateMovie={rateMovie}
                 />
@@ -262,6 +319,20 @@ function App() {
               }
             />
             <Route
+              path="/watchlist"
+              element={
+                <WatchlistPage
+                  watchlist={watchlist}
+                  isFavorite={isFavorite}
+                  onToggleFavorite={toggleFavorite}
+                  onOpenDetails={handleOpenDetails}
+                  toggleWatched={toggleWatched}
+                  isInWatchlist={isInWatchlist}
+                  removeFromWatchlist={removeFromWatchlist}
+                />
+              }
+            />
+            <Route
               path="/discover"
               element={
                 <DiscoverPage
@@ -270,6 +341,8 @@ function App() {
                   onOpenDetails={handleOpenDetails}
                   isWatched={isWatched}
                   toggleWatched={toggleWatched}
+                  isInWatchlist={isInWatchlist}
+                  toggleWatchlist={toggleWatchlist}
                   ratings={ratings}
                 />
               }
@@ -293,6 +366,7 @@ function App() {
                 <ul className="list-unstyled">
                   <li><Link className="text-decoration-none text-muted" to="/">Ana Sayfa</Link></li>
                   <li><Link className="text-decoration-none text-muted" to="/discover">Keşfet</Link></li>
+                  <li><Link className="text-decoration-none text-muted" to="/watchlist">İzleme Listesi</Link></li>
                   <li><Link className="text-decoration-none text-muted" to="/favorites">Favoriler</Link></li>
                   <li><Link className="text-decoration-none text-muted" to="/watched">İzlenenler</Link></li>
                 </ul>
@@ -320,6 +394,8 @@ function App() {
             onToggleFavorite={() => toggleFavorite(selectedMovie)}
             isWatched={isWatched(selectedMovie.id)}
             toggleWatched={() => toggleWatched(selectedMovie)}
+            isInWatchlist={isInWatchlist(selectedMovie.id)}
+            toggleWatchlist={() => toggleWatchlist(selectedMovie)}
             userRating={ratings[selectedMovie.id] || 0}
             rateMovie={(rating) => rateMovie(selectedMovie.id, rating)}
           />

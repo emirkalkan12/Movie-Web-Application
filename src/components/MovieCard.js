@@ -1,6 +1,6 @@
 import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Star, X, Info, Heart, Eye, EyeOff, Calendar, Clock, Award } from "lucide-react";
+import { Star, X, Info, Heart, Eye, EyeOff, Calendar, Clock, Award, ListChecks } from "lucide-react";
 
 const MovieCard = ({
   movie,
@@ -9,11 +9,13 @@ const MovieCard = ({
   onOpenDetails,
   isWatched,
   toggleWatched,
+  isInWatchlist,
+  toggleWatchlist,
   userRating
 }) => {
   const posterUrl = movie.poster_path
     ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
-    : 'https://via.placeholder.com/500x750?text=No+Image';
+    : 'https://via.placeholder.com/500x750?text=Resim+Yok&bg=343a40&fg=ffffff';
 
   const favorite = isFavorite(movie.id);
   
@@ -49,6 +51,15 @@ const MovieCard = ({
           <div className="position-absolute top-0 start-0 m-2 z-3">
             <span className="badge bg-success d-flex align-items-center gap-1 py-2">
               <Eye size={14} /> İzlendi
+            </span>
+          </div>
+        )}
+        
+        {/* Watchlist badge */}
+        {!isWatched && isInWatchlist && isInWatchlist(movie.id) && (
+          <div className="position-absolute top-0 start-0 m-2 z-3">
+            <span className="badge bg-primary d-flex align-items-center gap-1 py-2">
+              <ListChecks size={14} /> İzleme Listesi
             </span>
           </div>
         )}
@@ -123,7 +134,7 @@ const MovieCard = ({
 
         {/* Overview text */}
         {movie.overview && (
-          <p className="card-text small text-muted mb-3 text-truncate-2">
+          <p className="card-text small text-dark mb-3 text-truncate-2">
             {movie.overview.substring(0, 100)}{movie.overview.length > 100 ? '...' : ''}
           </p>
         )}
@@ -153,6 +164,18 @@ const MovieCard = ({
           >
             {isWatched ? <Eye size={16} /> : <EyeOff size={16} />}
           </button>
+
+          {/* İzleme Listesi Butonu */}
+          {!isWatched && toggleWatchlist && (
+            <button
+              className={`btn btn-sm ${isInWatchlist && isInWatchlist(movie.id) ? "btn-primary" : "btn-outline-primary"}`}
+              onClick={() => toggleWatchlist(movie)}
+              title={isInWatchlist && isInWatchlist(movie.id) ? "Listeden Çıkar" : "İzleme Listeme Ekle"}
+              disabled={isWatched}
+            >
+              <ListChecks size={16} />
+            </button>
+          )}
         </div>
       </div>
     </div>

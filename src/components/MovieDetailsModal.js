@@ -3,7 +3,7 @@ import axios from 'axios';
 import { 
   X, Star, Calendar, Clock, Tag, Heart, CheckCircle, 
   User, Users, Globe, BarChart2, Video, TrendingUp, Image, Info, 
-  Eye, EyeOff, Award
+  Eye, EyeOff, Award, ListChecks
 } from 'lucide-react';
 
 const MovieDetailsModal = ({ 
@@ -13,6 +13,8 @@ const MovieDetailsModal = ({
   onToggleFavorite, 
   isWatched, 
   toggleWatched, 
+  isInWatchlist,
+  toggleWatchlist,
   userRating, 
   rateMovie 
 }) => {
@@ -165,6 +167,18 @@ const MovieDetailsModal = ({
                         </>
                       )}
                     </button>
+
+                    {/* İzleme Listesi Butonu */}
+                    {!isWatched && (
+                      <button 
+                        onClick={() => toggleWatchlist()}
+                        className={`btn ${isInWatchlist ? 'btn-primary' : 'btn-outline-primary'} d-flex align-items-center justify-content-center gap-2`}
+                        disabled={isWatched}
+                      >
+                        <ListChecks size={18} /> 
+                        {isInWatchlist ? 'Listeden Çıkar' : 'İzleme Listeme Ekle'}
+                      </button>
+                    )}
                   </div>
                   
                   {/* Basic Info */}
