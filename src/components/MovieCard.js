@@ -50,7 +50,7 @@ const MovieCard = ({
         {isWatched && (
           <div className="position-absolute top-0 start-0 m-2 z-3">
             <span className="badge bg-success d-flex align-items-center gap-1 py-2">
-              <Eye size={14} /> İzlendi
+              <Eye size={14} /> <span className="d-none d-sm-inline">İzlendi</span>
             </span>
           </div>
         )}
@@ -59,7 +59,7 @@ const MovieCard = ({
         {!isWatched && isInWatchlist && isInWatchlist(movie.id) && (
           <div className="position-absolute top-0 start-0 m-2 z-3">
             <span className="badge bg-primary d-flex align-items-center gap-1 py-2">
-              <ListChecks size={14} /> İzleme Listesi
+              <ListChecks size={14} /> <span className="d-none d-sm-inline">İzleme Listesi</span>
             </span>
           </div>
         )}
@@ -120,62 +120,66 @@ const MovieCard = ({
         {movie.genres && movie.genres.length > 0 && (
           <div className="mb-2">
             <div className="d-flex flex-wrap gap-1">
-              {movie.genres.slice(0, 3).map(genre => (
+              {movie.genres.slice(0, 2).map(genre => (
                 <span key={genre.id} className="badge bg-secondary small">
                   {genre.name}
                 </span>
               ))}
-              {movie.genres.length > 3 && (
-                <span className="badge bg-secondary small">+{movie.genres.length - 3}</span>
+              {movie.genres.length > 2 && (
+                <span className="badge bg-secondary small">+{movie.genres.length - 2}</span>
               )}
             </div>
           </div>
         )}
 
-        {/* Overview text */}
+        {/* Overview text - hide on extra small screens */}
         {movie.overview && (
-          <p className="card-text small text-dark mb-3 text-truncate-2">
+          <p className="card-text small text-dark mb-3 text-truncate-2 d-none d-sm-block">
             {movie.overview.substring(0, 100)}{movie.overview.length > 100 ? '...' : ''}
           </p>
         )}
 
         {/* Action buttons */}
         <div className="mt-auto pt-2 d-flex flex-wrap gap-2">
+          {/* On mobile, show only icons in buttons */}
           <button
             className="btn btn-primary btn-sm flex-grow-1 d-flex align-items-center justify-content-center gap-1"
             onClick={() => onOpenDetails(movie)}
           >
             <Info size={16} />
-            Detaylar
+            <span className="d-none d-sm-inline">Detaylar</span>
           </button>
 
-          <button
-            className={`btn btn-sm ${favorite ? "btn-danger" : "btn-outline-danger"}`}
-            onClick={() => onToggleFavorite(movie)}
-            title={favorite ? "Favoriden Kaldır" : "Favorilere Ekle"}
-          >
-            <Heart size={16} fill={favorite ? "currentColor" : "none"} />
-          </button>
-
-          <button
-            className={`btn btn-sm ${isWatched ? "btn-success" : "btn-outline-success"}`}
-            onClick={() => toggleWatched(movie)}
-            title={isWatched ? "İzlendi olarak işaretlendi" : "İzlenmedi olarak işaretlendi"}
-          >
-            {isWatched ? <Eye size={16} /> : <EyeOff size={16} />}
-          </button>
-
-          {/* İzleme Listesi Butonu */}
-          {!isWatched && toggleWatchlist && (
+          {/* Action button group for mobile optimization */}
+          <div className="d-flex gap-1">
             <button
-              className={`btn btn-sm ${isInWatchlist && isInWatchlist(movie.id) ? "btn-primary" : "btn-outline-primary"}`}
-              onClick={() => toggleWatchlist(movie)}
-              title={isInWatchlist && isInWatchlist(movie.id) ? "Listeden Çıkar" : "İzleme Listeme Ekle"}
-              disabled={isWatched}
+              className={`btn btn-sm ${favorite ? "btn-danger" : "btn-outline-danger"}`}
+              onClick={() => onToggleFavorite(movie)}
+              title={favorite ? "Favoriden Kaldır" : "Favorilere Ekle"}
             >
-              <ListChecks size={16} />
+              <Heart size={16} fill={favorite ? "currentColor" : "none"} />
             </button>
-          )}
+
+            <button
+              className={`btn btn-sm ${isWatched ? "btn-success" : "btn-outline-success"}`}
+              onClick={() => toggleWatched(movie)}
+              title={isWatched ? "İzlendi olarak işaretlendi" : "İzlenmedi olarak işaretlendi"}
+            >
+              {isWatched ? <Eye size={16} /> : <EyeOff size={16} />}
+            </button>
+
+            {/* İzleme Listesi Butonu */}
+            {!isWatched && toggleWatchlist && (
+              <button
+                className={`btn btn-sm ${isInWatchlist && isInWatchlist(movie.id) ? "btn-primary" : "btn-outline-primary"}`}
+                onClick={() => toggleWatchlist(movie)}
+                title={isInWatchlist && isInWatchlist(movie.id) ? "Listeden Çıkar" : "İzleme Listeme Ekle"}
+                disabled={isWatched}
+              >
+                <ListChecks size={16} />
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </div>
