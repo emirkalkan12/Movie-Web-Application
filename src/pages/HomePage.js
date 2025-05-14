@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom';
 
 const TMDB_API_BASE_URL = "https://api.themoviedb.org/3";
 
-const HomePage = ({ isFavorite, onToggleFavorite, onOpenDetails, isWatched, toggleWatched, ratings }) => {
+const HomePage = ({ isFavorite, onToggleFavorite, onOpenDetails, isWatched, toggleWatched, ratings, isInWatchlist, toggleWatchlist }) => {
   const [query, setQuery] = useState("");
   const [movies, setMovies] = useState([]);
   const [popularMovies, setPopularMovies] = useState([]);
@@ -300,6 +300,8 @@ const HomePage = ({ isFavorite, onToggleFavorite, onOpenDetails, isWatched, togg
                       onOpenDetails={onOpenDetails}
                       isWatched={isWatched ? isWatched(movie.id) : false}
                       toggleWatched={() => toggleWatched(movie)}
+                      isInWatchlist={isInWatchlist}
+                      toggleWatchlist={() => toggleWatchlist(movie)}
                       userRating={ratings && movie.id ? ratings[movie.id] : 0}
                     />
                   </div>
@@ -388,6 +390,8 @@ const HomePage = ({ isFavorite, onToggleFavorite, onOpenDetails, isWatched, togg
                               onOpenDetails={onOpenDetails}
                               isWatched={isWatched ? isWatched(movie.id) : false}
                               toggleWatched={() => toggleWatched(movie)}
+                              isInWatchlist={isInWatchlist}
+                              toggleWatchlist={() => toggleWatchlist(movie)}
                               userRating={ratings && movie.id ? ratings[movie.id] : 0}
                             />
                           </div>

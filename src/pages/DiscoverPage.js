@@ -2,9 +2,18 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import MovieCard from '../components/MovieCard';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Sliders, Filter, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Sliders, Filter, ChevronLeft, ChevronRight, X } from 'lucide-react';
 
-const DiscoverPage = ({ isFavorite, onToggleFavorite, onOpenDetails, isWatched, toggleWatched, ratings }) => {
+const DiscoverPage = ({ 
+  isFavorite, 
+  onToggleFavorite, 
+  onOpenDetails, 
+  isWatched, 
+  toggleWatched, 
+  ratings,
+  isInWatchlist,
+  toggleWatchlist
+}) => {
   const [movies, setMovies] = useState([]);
   const [genres, setGenres] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -113,13 +122,22 @@ const DiscoverPage = ({ isFavorite, onToggleFavorite, onOpenDetails, isWatched, 
     <div className="container py-5">
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h1 className="mb-0">🔍 Film Keşfet</h1>
-        <button 
-          className="btn btn-outline-primary d-flex align-items-center gap-2"
-          onClick={() => setShowFilters(!showFilters)}
-        >
-          <Sliders size={18} />
-          {showFilters ? 'Filtreleri Gizle' : 'Filtreleri Göster'}
-        </button>
+        <div className="d-flex gap-2">
+          <button 
+            className="btn btn-outline-secondary d-flex align-items-center gap-1"
+            onClick={resetFilters}
+            disabled={selectedGenres.length === 0 && !year && voteAverage === 0}
+          >
+            <X size={18} /> Filtreleri Temizle
+          </button>
+          <button 
+            className={`btn ${showFilters ? 'btn-primary' : 'btn-outline-primary'} d-flex align-items-center gap-1`}
+            onClick={() => setShowFilters(!showFilters)}
+          >
+            <Sliders size={18} /> 
+            {showFilters ? 'Filtreleri Gizle' : 'Filtreleri Göster'}
+          </button>
+        </div>
       </div>
 
       {/* Filters */}
@@ -276,6 +294,8 @@ const DiscoverPage = ({ isFavorite, onToggleFavorite, onOpenDetails, isWatched, 
               onOpenDetails={onOpenDetails}
               isWatched={isWatched(movie.id)}
               toggleWatched={() => toggleWatched(movie)}
+              isInWatchlist={isInWatchlist}
+              toggleWatchlist={() => toggleWatchlist(movie)}
               userRating={ratings[movie.id] || 0}
             />
           </div>
