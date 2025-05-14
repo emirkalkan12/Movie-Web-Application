@@ -204,17 +204,17 @@ function App() {
               <ul className="navbar-nav ms-auto">
                 <li className="nav-item">
                   <NavLink className={({isActive}) => `nav-link d-flex align-items-center gap-2 ${isActive ? 'active fw-bold' : ''}`} to="/">
-                    <Home size={18} /> Ana Sayfa
+                    <Home size={20} /> <span className="d-none d-md-inline">Ana Sayfa</span>
                   </NavLink>
                 </li>
                 <li className="nav-item">
                   <NavLink className={({isActive}) => `nav-link d-flex align-items-center gap-2 ${isActive ? 'active fw-bold' : ''}`} to="/discover">
-                    <Compass size={18} /> Keşfet
+                    <Compass size={20} /> <span className="d-none d-md-inline">Keşfet</span>
                   </NavLink>
                 </li>
                 <li className="nav-item">
                   <NavLink className={({isActive}) => `nav-link d-flex align-items-center gap-2 ${isActive ? 'active fw-bold' : ''}`} to="/watchlist">
-                    <ListChecks size={18} /> İzleme Listesi
+                    <ListChecks size={20} /> <span className="d-none d-md-inline">İzleme Listesi</span>
                     {watchlist.length > 0 && (
                       <span className="badge bg-primary rounded-pill">{watchlist.length}</span>
                     )}
@@ -222,7 +222,7 @@ function App() {
                 </li>
                 <li className="nav-item">
                   <NavLink className={({isActive}) => `nav-link d-flex align-items-center gap-2 ${isActive ? 'active fw-bold' : ''}`} to="/favorites">
-                    <Heart size={18} /> Favoriler
+                    <Heart size={20} /> <span className="d-none d-md-inline">Favoriler</span>
                     {favorites.length > 0 && (
                       <span className="badge bg-danger rounded-pill">{favorites.length}</span>
                     )}
@@ -230,7 +230,7 @@ function App() {
                 </li>
                 <li className="nav-item">
                   <NavLink className={({isActive}) => `nav-link d-flex align-items-center gap-2 ${isActive ? 'active fw-bold' : ''}`} to="/watched">
-                    <Tv size={18} /> İzlenenler
+                    <Tv size={20} /> <span className="d-none d-md-inline">İzlenenler</span>
                     {watchedMovies.length > 0 && (
                       <span className="badge bg-success rounded-pill">{watchedMovies.length}</span>
                     )}
@@ -241,15 +241,15 @@ function App() {
                     className="nav-link d-flex align-items-center gap-2"
                     onClick={() => setShowStats(!showStats)}
                   >
-                    <TrendingUp size={18} /> İstatistikler
+                    <TrendingUp size={20} /> <span className="d-none d-md-inline">İstatistikler</span>
                   </button>
                 </li>
-                <li className="nav-item ms-lg-3">
+                <li className="nav-item ms-lg-3 mt-2 mt-lg-0">
                   <button 
-                    className="btn btn-outline-light btn-sm"
+                    className="btn btn-outline-light btn-sm w-100"
                     onClick={toggleTheme}
                   >
-                    {theme === 'dark' ? '☀️ Aydınlık Mod' : '🌙 Karanlık Mod'}
+                    {theme === 'dark' ? '☀️' : '🌙'} <span className="d-none d-md-inline">{theme === 'dark' ? 'Aydınlık Mod' : 'Karanlık Mod'}</span>
                   </button>
                 </li>
               </ul>
@@ -257,10 +257,11 @@ function App() {
           </div>
         </nav>
 
-        {/* Statistics Dashboard - Moved here to be outside of main content */}
+        {/* Statistics Dashboard Modal */}
         {showStats && (
-          <div className="position-fixed top-0 start-0 w-100 h-100 bg-dark bg-opacity-50 d-flex justify-content-center align-items-center" style={{ zIndex: 1050 }}>
-            <div className="container">
+          <div className="position-fixed top-0 start-0 w-100 h-100 bg-dark bg-opacity-50 d-flex justify-content-center align-items-center" 
+               style={{ zIndex: 1050 }}>
+            <div className="container-fluid container-md px-2 py-2 py-md-0">
               <StatsDashboard 
                 stats={stats} 
                 onClose={() => setShowStats(false)}
