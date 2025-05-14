@@ -101,7 +101,7 @@ const MovieDetailsModal = ({
           {/* Backdrop header */}
           <div className="position-relative">
             {backdropUrl ? (
-              <div className="ratio ratio-21x9" style={{maxHeight: '350px', overflow: 'hidden'}}>
+              <div className="ratio ratio-16x9 ratio-md-21x9" style={{maxHeight: '350px', overflow: 'hidden'}}>
                 <img 
                   src={backdropUrl} 
                   alt={`${movie.title} backdrop`} 
@@ -115,9 +115,9 @@ const MovieDetailsModal = ({
             
             {/* Floating movie info on backdrop */}
             <div className="position-absolute bottom-0 start-0 p-4 text-white">
-              <h2 className="fw-bold mb-1">{movie.title}</h2>
+              <h2 className="fw-bold mb-1 fs-4 fs-md-2">{movie.title}</h2>
               {movie.tagline && (
-                <p className="fst-italic mb-0 text-light">{movie.tagline}</p>
+                <p className="fst-italic mb-0 text-light small">{movie.tagline}</p>
               )}
             </div>
             
@@ -134,9 +134,82 @@ const MovieDetailsModal = ({
           {/* Modal body */}
           <div className="modal-body p-0">
             <div className="row g-0">
-              {/* Sidebar with poster and actions */}
-              <div className="col-md-3 bg-light p-3 text-center">
-                <div className="sticky-top" style={{top: '15px'}}>
+              {/* Sidebar with poster and actions - stack on mobile */}
+              <div className="col-md-3 bg-light p-2 p-md-3">
+                {/* On mobile, make the sidebar horizontal */}
+                <div className="d-md-none mb-3">
+                  <div className="row align-items-center g-2">
+                    <div className="col-4">
+                      <img 
+                        src={posterUrl} 
+                        alt={movie.title} 
+                        className="img-fluid rounded-3 shadow-sm"
+                      />
+                    </div>
+                    <div className="col-8">
+                      <div className="d-flex flex-column gap-2">
+                        <div className="d-flex gap-1">
+                          <button 
+                            onClick={() => onToggleFavorite(movie)}
+                            className={`btn btn-sm ${isFavorite ? 'btn-danger' : 'btn-outline-danger'} d-flex align-items-center justify-content-center flex-grow-1`}
+                            title={isFavorite ? 'Favorilerden Çıkar' : 'Favorilere Ekle'}
+                          >
+                            <Heart size={16} fill={isFavorite ? "currentColor" : "none"} /> 
+                            <span className="d-none d-sm-inline ms-1">
+                              {isFavorite ? 'Favorilerden Çıkar' : 'Favorilere Ekle'}
+                            </span>
+                          </button>
+                          
+                          <button 
+                            onClick={() => toggleWatched()}
+                            className={`btn btn-sm ${isWatched ? 'btn-success' : 'btn-outline-success'} d-flex align-items-center justify-content-center flex-grow-1`}
+                            title={isWatched ? 'İzlendi olarak işaretlendi' : 'İzlenmedim'}
+                          >
+                            {isWatched ? <Eye size={16} /> : <EyeOff size={16} />}
+                            <span className="d-none d-sm-inline ms-1">
+                              {isWatched ? 'İzlendi' : 'İzlemedim'}
+                            </span>
+                          </button>
+                        </div>
+
+                        {/* İzleme Listesi Butonu */}
+                        {!isWatched && (
+                          <div>
+                            <button 
+                              onClick={() => toggleWatchlist()}
+                              className={`btn btn-sm ${isInWatchlist ? 'btn-primary' : 'btn-outline-primary'} d-flex align-items-center justify-content-center w-100`}
+                              disabled={isWatched}
+                              title={isInWatchlist ? 'Listeden Çıkar' : 'İzleme Listeme Ekle'}
+                            >
+                              <ListChecks size={16} /> 
+                              <span className="d-none d-sm-inline ms-1">
+                                {isInWatchlist ? 'Listeden Çıkar' : 'İzleme Listeme Ekle'}
+                              </span>
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                      
+                      {/* Quick Info for mobile */}
+                      <div className="d-flex flex-wrap gap-2 mt-2 small">
+                        {movie.release_date && (
+                          <span className="text-muted d-flex align-items-center">
+                            <Calendar size={12} className="me-1" /> 
+                            {new Date(movie.release_date).toLocaleDateString('tr-TR')}
+                          </span>
+                        )}
+                        {movie.runtime > 0 && (
+                          <span className="text-muted d-flex align-items-center">
+                            <Clock size={12} className="me-1" /> {formatRuntime(movie.runtime)}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Desktop sidebar */}
+                <div className="d-none d-md-block sticky-top" style={{top: '15px'}}>
                   <img 
                     src={posterUrl} 
                     alt={movie.title} 
@@ -270,41 +343,56 @@ const MovieDetailsModal = ({
               
               {/* Main content */}
               <div className="col-md-9 p-4">
-                {/* Tabs */}
-                <ul className="nav nav-tabs mb-4">
+                {/* Tab navigation buttons */}
+                <ul className="nav nav-tabs mb-0 mt-3 px-3 flex-nowrap overflow-auto small small-scrollbar">
                   <li className="nav-item">
-                    <button
-                      className={`nav-link ${activeTab === 'overview' ? 'active' : ''}`}
+                    <button 
+                      className={`nav-link ${activeTab === 'overview' ? 'active fw-bold' : ''}`}
                       onClick={() => setActiveTab('overview')}
                     >
-                      <Info size={16} className="me-1" /> Genel Bakış
+                      <Info size={16} className="me-1 d-none d-sm-inline" /> Özet
                     </button>
                   </li>
+                  
+                  {credits && (
+                    <li className="nav-item">
+                      <button 
+                        className={`nav-link ${activeTab === 'cast' ? 'active fw-bold' : ''}`}
+                        onClick={() => setActiveTab('cast')}
+                      >
+                        <Users size={16} className="me-1 d-none d-sm-inline" /> Oyuncular
+                      </button>
+                    </li>
+                  )}
+                  
+                  {videos.length > 0 && (
+                    <li className="nav-item">
+                      <button 
+                        className={`nav-link ${activeTab === 'videos' ? 'active fw-bold' : ''}`}
+                        onClick={() => setActiveTab('videos')}
+                      >
+                        <Video size={16} className="me-1 d-none d-sm-inline" /> Videolar
+                      </button>
+                    </li>
+                  )}
+                  
+                  {similar.length > 0 && (
+                    <li className="nav-item">
+                      <button 
+                        className={`nav-link ${activeTab === 'similar' ? 'active fw-bold' : ''}`}
+                        onClick={() => setActiveTab('similar')}
+                      >
+                        <TrendingUp size={16} className="me-1 d-none d-sm-inline" /> Benzer Filmler
+                      </button>
+                    </li>
+                  )}
+                  
                   <li className="nav-item">
-                    <button
-                      className={`nav-link ${activeTab === 'cast' ? 'active' : ''}`}
-                      onClick={() => setActiveTab('cast')}
-                      disabled={!credits}
+                    <button 
+                      className={`nav-link ${activeTab === 'rate' ? 'active fw-bold' : ''}`}
+                      onClick={() => setActiveTab('rate')}
                     >
-                      <Users size={16} className="me-1" /> Oyuncular
-                    </button>
-                  </li>
-                  <li className="nav-item">
-                    <button
-                      className={`nav-link ${activeTab === 'videos' ? 'active' : ''}`}
-                      onClick={() => setActiveTab('videos')}
-                      disabled={videos.length === 0}
-                    >
-                      <Video size={16} className="me-1" /> Videolar
-                    </button>
-                  </li>
-                  <li className="nav-item">
-                    <button
-                      className={`nav-link ${activeTab === 'similar' ? 'active' : ''}`}
-                      onClick={() => setActiveTab('similar')}
-                      disabled={similar.length === 0}
-                    >
-                      <TrendingUp size={16} className="me-1" /> Benzer Filmler
+                      <Star size={16} className="me-1 d-none d-sm-inline" /> Puanla
                     </button>
                   </li>
                 </ul>
