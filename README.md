@@ -1,4 +1,4 @@
-# Mini Movie App
+# Movie Web Application
 
 This project is a modern movie application developed for film enthusiasts, helping you to discover movies, add them to favorites, manage your watchlist, and track the movies you've watched.
 
@@ -12,6 +12,7 @@ This project is a modern movie application developed for film enthusiasts, helpi
 - **Rating**: Rate movies on a scale of 1-10
 - **Statistics**: Detailed statistics about your watching habits and preferences
 - **Dark/Light Mode**: Choose the theme that suits your eyes
+- **Mobile Responsive**: Optimized for all screen sizes and touch devices
 
 ## Installation
 
@@ -27,8 +28,8 @@ Follow these steps to run the project in your local environment:
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/username/mini-movie-app.git
-   cd mini-movie-app
+   git clone https://github.com/emirkalkan12/movie-web-application.git
+   cd movie-web-application
    ```
 
 2. Install dependencies:
@@ -44,7 +45,9 @@ Follow these steps to run the project in your local environment:
    ```
 
 4. Start the application:
+   ```bash
    npm start
+   ```
 
 5. Go to `http://localhost:3000` in your browser to start using the application!
 
@@ -70,9 +73,9 @@ Follow these steps to run the project in your local environment:
 
 - User accounts and authentication
 - Movie comments and reviews
-- Mobile responsiveness improvements
 - Notifications for upcoming movies
 - TV series support
+- PWA support for offline access
 
 ## License
 
@@ -86,4 +89,4 @@ This project is licensed under the [MIT License](LICENSE).
 
 ---
 
-<p align="center">❤️ ile geliştirildi</p> 
+<p align="center">Developed with ❤️</p>
