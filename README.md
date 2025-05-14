@@ -1,96 +1,73 @@
-# Mini Movie App
+# Movie Web Application
 
-Bu proje, film tutkunları için geliştirilmiş, filmleri keşfetmenize, favorilere eklemenize, izleme listenizi yönetmenize ve izlediğiniz filmleri takip etmenize yardımcı olan modern bir film uygulamasıdır.
+This project is a modern movie application developed for film enthusiasts, helping you to discover movies, add them to favorites, manage your watchlist, and track the movies you've watched.
 
-<p align="center">
-  <img src="https://via.placeholder.com/800x400?text=Mini+Movie+App" alt="Mini Movie App Screenshot" width="800" />
-</p>
+## Features
 
-##  Özellikler
+- **Movie Discovery**: Discover thousands of movies with TMDB API integration
+- **Advanced Filtering**: Search and filter by genres, years, and ratings
+- **Favorites**: Add and manage your favorite movies
+- **Watchlist**: Save movies you want to watch in the future
+- **Watched Movies**: Track the movies you've watched
+- **Rating**: Rate movies on a scale of 1-10
+- **Statistics**: Detailed statistics about your watching habits and preferences
+- **Dark/Light Mode**: Choose the theme that suits your eyes
 
--  **Film Keşfi**: TMDB API entegrasyonu ile binlerce filmi keşfedin
--  **Gelişmiş Filtreleme**: Türlere, yıllara, puanlara göre arama ve filtreleme
-- ❤ **Favoriler**: Sevdiğiniz filmleri favorilere ekleyin ve yönetin
--  **İzleme Listesi**: Gelecekte izlemek istediğiniz filmleri kaydedin
--  **İzlenen Filmler**: İzlediğiniz filmleri takip edin
--  **Puanlama**: Filmlere 1-10 arası puan verin
--  **İstatistikler**: İzleme alışkanlıklarınız ve tercihlerinizle ilgili detaylı istatistikler
--  **Karanlık/Aydınlık Mod**: Gözlerinize uygun temayı seçin
+## Installation
 
-##  Kurulum
+Follow these steps to run the project in your local environment:
 
-Projeyi yerel ortamınızda çalıştırmak için aşağıdaki adımları izleyin:
+### Prerequisites
 
-### Ön Koşullar
+- Node.js
+- npm or yarn
+- TMDB API key
 
-- Node.js 
-- npm veya yarn
-- TMDB API anahtarı
+### Installation Steps
 
-### Kurulum Adımları
+1. Clone the repository
 
-1. Repoyu klonlayın:
-   ```bash
-   git clone https://github.com/kullaniciadi/mini-movie-app.git
-   cd mini-movie-app
-   ```
-
-2. Bağımlılıkları yükleyin:
-   ```bash
-   npm install
-   # veya
-   yarn install
-   ```
-
-3. `.env` dosyası oluşturun ve TMDB API anahtarınızı ekleyin:
+2. Install dependencies
+  
+3. Create a `.env` file and add your TMDB API key:
    ```
    REACT_APP_TMDB_API_KEY=your_api_key_here
    ```
 
-4. Uygulamayı başlatın:
+4. Start the application:
    npm start
-  
 
-5. Tarayıcınızda `http://localhost:3000` adresine giderek uygulamayı kullanmaya başlayın!
+5. Go to `http://localhost:3000` in your browser to start using the application!
 
-## 🛠 Kullanılan Teknolojiler
+## Technologies Used
 
-- **React**: UI geliştirme için modern JavaScript framework'ü
-- **React Router**: Sayfa yönlendirmesi için
-- **Bootstrap 5**: Duyarlı ve modern kullanıcı arayüzü için
-- **Axios**: HTTP istekleri için
-- **Lucide React**: Modern ikonlar için
-- **LocalStorage**: Kullanıcı tercihlerini ve verilerini saklamak için
+- **React**: Modern JavaScript framework for UI development
+- **React Router**: For page routing
+- **Bootstrap 5**: For responsive and modern user interface
+- **Axios**: For HTTP requests
+- **Lucide React**: For modern icons
+- **LocalStorage**: To store user preferences and data
+
+## Usage
+
+- **Home Page**: Popular, trending, and top-rated movies
+- **Discover**: Browse movies with advanced filtering options
+- **Watchlist**: Save and manage movies you want to watch
+- **Favorites**: Easily access your favorite movies
+- **Watched**: Track and rate the movies you've watched
+- **Statistics**: Get detailed information about your watching habits
+
+## Planned Features
+
+- User accounts and authentication
+- Movie comments and reviews
+- Mobile responsiveness improvements
+- Notifications for upcoming movies
+- TV series support
 
 
-
-## Kullanım
-
-- **Ana Sayfa**: Popüler, trend ve en iyi puanlı filmler
-- **Keşfet**: Gelişmiş filtreleme seçenekleriyle filmler arasında gezinin
-- **İzleme Listesi**: İzlemek istediğiniz filmleri kaydedip yönetin
-- **Favoriler**: Beğendiğiniz filmleri kolayca erişin
-- **İzlenenler**: İzlediğiniz filmleri takip edin ve puanlayın
-- **İstatistikler**: İzleme alışkanlıklarınız hakkında detaylı bilgiler edinin
-
-##  Planlanan Özellikler
-
--  Kullanıcı hesapları ve kimlik doğrulama
--  Film yorumları ve incelemeler
--  Mobil uyumluluk iyileştirmeleri
--  Yakında çıkacak filmler için bildirimler
--  TV dizileri desteği
-
-## 📝 Lisans
-
-Bu proje [MIT Lisansı](LICENSE) altında lisanslanmıştır.
-
-## 🙏 Teşekkürler
-
-- [TMDB API](https://www.themoviedb.org/documentation/api) - Film verileri için
-- [Bootstrap](https://getbootstrap.com/) - UI framework için
-- [Lucide React](https://lucide.dev/) - İkonlar için
+- [TMDB API](https://www.themoviedb.org/documentation/api) - For movie data
+- [Bootstrap](https://getbootstrap.com/) - For UI framework
+- [Lucide React](https://lucide.dev/) - For icons
 
 ---
-
-<p align="center">❤️ ile geliştirildi</p>
