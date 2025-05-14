@@ -1,345 +1,401 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Star, StarOff, X, Heart, List, Grid, Search, Filter, ChevronDown, Info } from "lucide-react";
-import MovieDetailsModal from '../components/MovieDetailsModal';
+import { Star, Filter, Search, Grid, List, Heart, SlidersHorizontal, Clock, Calendar } from "lucide-react";
+import MovieCard from '../components/MovieCard';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
-
-// Fixed MovieListItem component
-const MovieListItem = ({ movie, isFavorite, onToggleFavorite, onOpenDetails, isWatched, userRating }) => {
-  const posterUrl = movie.poster_path
-    ? `https://image.tmdb.org/t/p/w92${movie.poster_path}`
-    : "/api/placeholder/92/138";
-
-  return (
-    <div className="flex items-center border-b py-3">
-      <img
-        src={posterUrl}
-        alt={movie.title}
-        className="mr-3"
-        style={{ width: '60px', height: '90px', objectFit: 'cover', borderRadius: '4px' }}
-      />
-      <div className="flex-grow">
-        <div className="flex items-center mb-1">
-          <h5 className="mb-0 mr-2">{movie.title}</h5>
-          {isWatched && <span className="bg-green-500 text-white text-xs px-2 py-1 rounded mr-2">Izlendi</span>}
-          {userRating > 0 && (
-            <div className="flex items-center text-yellow-500 mr-2">
-              <Star size={16} fill="currentColor" stroke="none" />
-              <span className="ml-1">{userRating}</span>
-            </div>
-          )}
-        </div>
-        <p className="text-gray-500 mb-0">{movie.release_date?.substring(0, 4)}</p>
-      </div>
-      <div className="flex gap-2">
-        <button 
-          className="border border-blue-500 text-blue-500 px-2 py-1 rounded text-sm flex items-center" 
-          onClick={() => onOpenDetails(movie)} 
-          title="Detaylar"
-        >
-          <Info size={18} /> <span className="hidden sm:inline ml-1">Detaylar</span>
-        </button>
-        <button 
-          className="border border-red-500 text-red-500 px-2 py-1 rounded text-sm" 
-          onClick={() => onToggleFavorite(movie)} 
-          title="Favoriden Kaldır"
-        >
-          <X size={18} />
-        </button>
-      </div>
-    </div>
-  );
-};
-
-// Fixed MovieCard component
-const MovieCard = ({ movie, isFavorite, onToggleFavorite, onOpenDetails, isWatched, userRating }) => {
-  const posterUrl = movie.poster_path
-    ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
-    : "/api/placeholder/500/750";
-
-  return (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden h-full flex flex-col">
-      <div className="relative">
-        <img
-          src={posterUrl}
-          alt={movie.title}
-          className="w-full h-64 object-cover"
-        />
-        <button
-          className="absolute top-2 right-2 bg-white rounded-full p-1 shadow-md"
-          onClick={() => onToggleFavorite(movie)}
-          title="Favoriden Kaldır"
-        >
-          <X size={20} className="text-red-500" />
-        </button>
-        {isWatched && (
-          <div className="absolute top-2 left-2 bg-green-500 text-white text-xs px-2 py-1 rounded">
-            Izlendi
-          </div>
-        )}
-      </div>
-      <div className="p-4 flex-grow">
-        <div className="flex justify-between items-start mb-2">
-          <h5 className="font-medium text-lg">{movie.title}</h5>
-          {userRating > 0 && (
-            <div className="flex items-center text-yellow-500">
-              <Star size={16} fill="currentColor" stroke="none" />
-              <span className="ml-1">{userRating}</span>
-            </div>
-          )}
-        </div>
-        <p className="text-gray-500 text-sm mb-2">{movie.release_date?.substring(0, 4)}</p>
-        <p className="text-sm line-clamp-3 mb-4">{movie.overview}</p>
-      </div>
-      <div className="p-4 pt-0">
-        <button
-          className="w-full bg-blue-500 text-white py-2 rounded flex items-center justify-center"
-          onClick={() => onOpenDetails(movie)}
-        >
-          <Info size={18} className="mr-1" /> Detaylar
-        </button>
-      </div>
-    </div>
-  );
-};
-
-const FavoritesPage = ({ favorites, isFavorite, onToggleFavorite, onOpenDetails, watchedMovies, toggleWatched, ratings, rateMovie }) => {
+const FavoritesPage = ({ 
+  favorites, 
+  isFavorite, 
+  onToggleFavorite, 
+  onOpenDetails, 
+  watchedMovies, 
+  toggleWatched, 
+  ratings, 
+  rateMovie 
+}) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [viewMode, setViewMode] = useState("grid");
   const [sortBy, setSortBy] = useState("title");
   const [filterGenre, setFilterGenre] = useState("");
   const [filteredFavorites, setFilteredFavorites] = useState([]);
-  const [showGenreDropdown, setShowGenreDropdown] = useState(false);
-  const [showSortDropdown, setShowSortDropdown] = useState(false);
-  
-  // For Details Modal
-  const [selectedMovie, setSelectedMovie] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isFiltersVisible, setIsFiltersVisible] = useState(false);
 
-  // Handle opening movie details
-  const handleOpenDetails = (movie) => {
-    setSelectedMovie(movie);
-    setIsModalOpen(true);
-  };
-
-  // Handle closing details modal
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-  };
-
+  // Filter and sort favorites
   useEffect(() => {
     let result = [...favorites];
+    
+    // Apply search filter
     if (searchTerm) {
-      result = result.filter(movie => movie.title.toLowerCase().includes(searchTerm.toLowerCase()));
+      result = result.filter(movie => 
+        movie.title.toLowerCase().includes(searchTerm.toLowerCase())
+      );
     }
+    
+    // Apply genre filter
     if (filterGenre) {
-      result = result.filter(movie => movie.genres && movie.genres.some(genre => genre.name === filterGenre));
+      result = result.filter(movie => 
+        movie.genres && movie.genres.some(genre => genre.name === filterGenre)
+      );
     }
+    
+    // Apply sorting
     if (sortBy === "title") {
       result.sort((a, b) => a.title.localeCompare(b.title));
     } else if (sortBy === "date") {
-      result.sort((a, b) => new Date(b.release_date) - new Date(a.release_date));
+      result.sort((a, b) => new Date(b.release_date || 0) - new Date(a.release_date || 0));
     } else if (sortBy === "rating") {
       result.sort((a, b) => {
-        const ratingA = ratings[a.id] || a.vote_average || 0;
-        const ratingB = ratings[b.id] || b.vote_average || 0;
+        const ratingA = ratings[a.id] || 0;
+        const ratingB = ratings[b.id] || 0;
         return ratingB - ratingA;
       });
+    } else if (sortBy === "popularity") {
+      result.sort((a, b) => (b.popularity || 0) - (a.popularity || 0));
     }
+    
     setFilteredFavorites(result);
   }, [favorites, searchTerm, sortBy, filterGenre, ratings]);
 
+  // Extract all unique genres from favorite movies
   const allGenres = useMemo(() => {
     const genres = favorites.flatMap(movie => movie.genres?.map(genre => genre.name) || []);
     return [...new Set(genres)].sort();
   }, [favorites]);
 
-  // Close dropdowns when clicking outside
-  useEffect(() => {
-    const handleClickOutside = () => {
-      setShowGenreDropdown(false);
-      setShowSortDropdown(false);
-    };
-    
-    document.addEventListener('click', handleClickOutside);
-    return () => {
-      document.removeEventListener('click', handleClickOutside);
-    };
-  }, []);
+  // Find if any movie is watched
+  const hasWatchedMovies = useMemo(() => {
+    return favorites.some(movie => watchedMovies.some(m => m.id === movie.id));
+  }, [favorites, watchedMovies]);
 
-  // Prevent propagation for dropdown buttons
-  const handleDropdownToggle = (setter, currentValue, e) => {
-    e.stopPropagation();
-    setter(!currentValue);
+  // Find if any movie is rated
+  const hasRatedMovies = useMemo(() => {
+    return favorites.some(movie => ratings[movie.id] > 0);
+  }, [favorites, ratings]);
+
+  // Filter stats
+  const filterStats = useMemo(() => {
+    if (filteredFavorites.length === 0) return null;
+    
+    const watchedCount = filteredFavorites.filter(movie => 
+      watchedMovies.some(m => m.id === movie.id)
+    ).length;
+    
+    const ratedCount = filteredFavorites.filter(movie => 
+      ratings[movie.id] > 0
+    ).length;
+    
+    const avgRating = ratedCount > 0 
+      ? filteredFavorites.reduce((sum, movie) => sum + (ratings[movie.id] || 0), 0) / ratedCount
+      : 0;
+    
+    return {
+      watchedCount,
+      ratedCount,
+      avgRating: avgRating.toFixed(1)
+    };
+  }, [filteredFavorites, watchedMovies, ratings]);
+
+  // Movie list view component
+  const MovieListItem = ({ movie }) => {
+    const posterUrl = movie.poster_path
+      ? `https://image.tmdb.org/t/p/w92${movie.poster_path}`
+      : 'https://via.placeholder.com/92x138?text=No+Image';
+    
+    const isMovieWatched = watchedMovies.some(m => m.id === movie.id);
+    const userRating = ratings[movie.id] || 0;
+    
+    return (
+      <div className="card mb-3 border-0 shadow-sm">
+        <div className="row g-0">
+          <div className="col-md-2 col-sm-3 col-4">
+            <div className="position-relative h-100">
+              <img
+                src={posterUrl}
+                alt={movie.title}
+                className="img-fluid rounded-start h-100 w-100 object-fit-cover"
+                style={{ maxHeight: '150px' }}
+              />
+              <div className="position-absolute top-0 end-0 mt-2 me-2">
+                <button 
+                  className="btn btn-sm btn-danger rounded-circle p-1"
+                  onClick={() => onToggleFavorite(movie)}
+                >
+                  <Heart size={16} fill="currentColor" />
+                </button>
+              </div>
+            </div>
+          </div>
+          <div className="col-md-10 col-sm-9 col-8">
+            <div className="card-body">
+              <div className="d-flex justify-content-between align-items-start mb-2">
+                <h5 className="card-title">{movie.title}</h5>
+                <div className="d-flex gap-2 align-items-center">
+                  {userRating > 0 && (
+                    <span className="badge bg-warning text-dark d-flex align-items-center">
+                      <Star size={14} fill="currentColor" className="me-1" />
+                      {userRating}
+                    </span>
+                  )}
+                  {isMovieWatched && (
+                    <span className="badge bg-success">İzlendi</span>
+                  )}
+                </div>
+              </div>
+              
+              <div className="d-flex gap-2 text-muted small mb-2">
+                {movie.release_date && (
+                  <span className="d-flex align-items-center">
+                    <Calendar size={14} className="me-1" />
+                    {new Date(movie.release_date).getFullYear()}
+                  </span>
+                )}
+                {movie.runtime && (
+                  <span className="d-flex align-items-center">
+                    <Clock size={14} className="me-1" />
+                    {Math.floor(movie.runtime / 60)}s {movie.runtime % 60}dk
+                  </span>
+                )}
+              </div>
+              
+              {movie.genres && (
+                <div className="mb-2">
+                  {movie.genres.slice(0, 3).map(genre => (
+                    <span key={genre.id} className="badge bg-secondary me-1">{genre.name}</span>
+                  ))}
+                </div>
+              )}
+              
+              <p className="card-text small text-muted text-truncate-2">
+                {movie.overview || "Film açıklaması bulunmamaktadır."}
+              </p>
+              
+              <button 
+                className="btn btn-primary btn-sm mt-2"
+                onClick={() => onOpenDetails(movie)}
+              >
+                Detaylar
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   };
 
   return (
-    <div className="container mx-auto py-5 px-4">
-      <div className="mb-4 text-center">
-        <h1 className="mb-2 text-2xl font-bold">❤️ Favori Filmlerim</h1>
-        <p className="text-gray-500">
-          {favorites.length === 0
-            ? "Henüz favori film eklenmedi"
-            : `Toplam ${favorites.length} favori film`}
-        </p>
-      </div>
-      
-      <div className="mb-4 flex flex-wrap gap-3 items-center justify-between">
-        <div className="relative w-full sm:w-auto grow">
-          <input
-            type="text"
-            className="w-full border rounded-lg px-3 py-2 pl-10"
-            placeholder="Film adı ara..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-          <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
+    <div className="container py-5">
+      {/* Page Header */}
+      <div className="row mb-4">
+        <div className="col-md-8">
+          <h1 className="display-5 fw-bold mb-0 d-flex align-items-center">
+            <Heart size={32} className="text-danger me-2" fill="currentColor" />
+            Favori Filmlerim
+          </h1>
+          <p className="text-muted mt-2">
+            {favorites.length === 0
+              ? "Henüz favori film eklenmedi"
+              : `Kütüphanenizde ${favorites.length} film var`}
+          </p>
         </div>
         
-        <div className="flex gap-2 w-full sm:w-auto">
-          <div className="relative">
-            <button 
-              className="flex items-center border rounded-lg px-3 py-2 bg-white"
-              onClick={(e) => handleDropdownToggle(setShowSortDropdown, showSortDropdown, e)}
-            >
-              <Filter size={18} className="mr-1" />
-              <span>Sırala</span>
-              <ChevronDown size={16} className="ml-1" />
-            </button>
-            
-            {showSortDropdown && (
-              <div className="absolute right-0 mt-1 bg-white border rounded-lg shadow-lg z-10 w-48" onClick={(e) => e.stopPropagation()}>
-                <div 
-                  className={`px-4 py-2 cursor-pointer hover:bg-gray-100 ${sortBy === 'title' ? 'font-bold' : ''}`}
-                  onClick={() => {
-                    setSortBy('title');
-                    setShowSortDropdown(false);
-                  }}
-                >
-                  İsme göre
+        {favorites.length > 0 && filterStats && (
+          <div className="col-md-4">
+            <div className="card border-0 bg-light shadow-sm">
+              <div className="card-body">
+                <div className="d-flex justify-content-between mb-2">
+                  <small className="text-muted">İzlenen:</small>
+                  <span className="badge bg-success">
+                    {filterStats.watchedCount} / {filteredFavorites.length}
+                  </span>
                 </div>
-                <div 
-                  className={`px-4 py-2 cursor-pointer hover:bg-gray-100 ${sortBy === 'date' ? 'font-bold' : ''}`}
-                  onClick={() => {
-                    setSortBy('date');
-                    setShowSortDropdown(false);
-                  }}
-                >
-                  Tarihe göre
-                </div>
-                <div 
-                  className={`px-4 py-2 cursor-pointer hover:bg-gray-100 ${sortBy === 'rating' ? 'font-bold' : ''}`}
-                  onClick={() => {
-                    setSortBy('rating');
-                    setShowSortDropdown(false);
-                  }}
-                >
-                  Puana göre
+                <div className="d-flex justify-content-between">
+                  <small className="text-muted">Ortalama Puan:</small>
+                  <span className="d-flex align-items-center text-warning">
+                    <Star size={14} fill="currentColor" className="me-1" />
+                    {filterStats.avgRating}/10
+                  </span>
                 </div>
               </div>
-            )}
+            </div>
           </div>
-          
-          <div className="relative">
-            <button 
-              className="flex items-center border rounded-lg px-3 py-2 bg-white"
-              onClick={(e) => handleDropdownToggle(setShowGenreDropdown, showGenreDropdown, e)}
-            >
-              <Filter size={18} className="mr-1" />
-              <span>{filterGenre || "Tür filtrele"}</span>
-              <ChevronDown size={16} className="ml-1" />
-            </button>
-            
-            {showGenreDropdown && (
-              <div className="absolute right-0 mt-1 bg-white border rounded-lg shadow-lg z-10 w-48 max-h-60 overflow-y-auto" onClick={(e) => e.stopPropagation()}>
-                <div 
-                  className={`px-4 py-2 cursor-pointer hover:bg-gray-100 ${!filterGenre ? 'font-bold' : ''}`}
-                  onClick={() => {
-                    setFilterGenre('');
-                    setShowGenreDropdown(false);
-                  }}
-                >
-                  Tümü
-                </div>
-                {allGenres.map(genre => (
-                  <div 
-                    key={genre}
-                    className={`px-4 py-2 cursor-pointer hover:bg-gray-100 ${filterGenre === genre ? 'font-bold' : ''}`}
-                    onClick={() => {
-                      setFilterGenre(genre);
-                      setShowGenreDropdown(false);
-                    }}
-                  >
-                    {genre}
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-          
-          <button 
-            className={`border rounded-lg px-3 py-2 ${viewMode === 'grid' ? 'bg-blue-500 text-white' : 'bg-white'}`}
-            onClick={() => setViewMode('grid')}
-            title="Izgara görünümü"
-          >
-            <Grid size={18} />
-          </button>
-          
-          <button 
-            className={`border rounded-lg px-3 py-2 ${viewMode === 'list' ? 'bg-blue-500 text-white' : 'bg-white'}`}
-            onClick={() => setViewMode('list')}
-            title="Liste görünümü"
-          >
-            <List size={18} />
-          </button>
-        </div>
+        )}
       </div>
       
-      {filteredFavorites.length === 0 ? (
-        <p className="text-gray-500 text-center py-8">Filtreye uyan favori film bulunamadı.</p>
-      ) : viewMode === "grid" ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-          {filteredFavorites.map(movie => (
-            <div key={movie.id}>
-              <MovieCard
-                movie={movie}
-                isFavorite={() => true}
-                onToggleFavorite={onToggleFavorite}
-                onOpenDetails={handleOpenDetails}
-                isWatched={watchedMovies.includes(movie.id)}
-                userRating={ratings[movie.id] || 0}
-              />
+      {/* Search and Filters */}
+      {favorites.length > 0 && (
+        <>
+          <div className="row mb-4">
+            <div className="col">
+              <div className="d-flex flex-wrap gap-2 justify-content-between align-items-center">
+                {/* Search input */}
+                <div className="search-container">
+                  <input
+                    type="text"
+                    className="form-control"
+                    placeholder="Film adı ara..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                  <Search className="search-icon" size={18} />
+                </div>
+                
+                {/* View mode and filter toggles */}
+                <div className="d-flex gap-2">
+                  <button
+                    className={`btn btn-outline-primary d-flex align-items-center gap-2`}
+                    onClick={() => setIsFiltersVisible(!isFiltersVisible)}
+                  >
+                    <SlidersHorizontal size={16} />
+                    {isFiltersVisible ? 'Filtreleri Gizle' : 'Filtreleri Göster'}
+                  </button>
+                  
+                  <div className="btn-group">
+                    <button 
+                      className={`btn ${viewMode === 'grid' ? 'btn-primary' : 'btn-outline-primary'}`}
+                      onClick={() => setViewMode('grid')}
+                      title="Izgara görünümü"
+                    >
+                      <Grid size={16} />
+                    </button>
+                    <button 
+                      className={`btn ${viewMode === 'list' ? 'btn-primary' : 'btn-outline-primary'}`}
+                      onClick={() => setViewMode('list')}
+                      title="Liste görünümü"
+                    >
+                      <List size={16} />
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
-          ))}
-        </div>
-      ) : (
-        <div className="bg-white rounded-lg shadow-md">
-          {filteredFavorites.map(movie => (
-            <div key={movie.id}>
-              <MovieListItem
-                movie={movie}
-                isFavorite={() => true}
-                onToggleFavorite={onToggleFavorite}
-                onOpenDetails={handleOpenDetails}
-                isWatched={watchedMovies.includes(movie.id)}
-                userRating={ratings[movie.id] || 0}
-              />
+          </div>
+          
+          {/* Advanced Filters */}
+          {isFiltersVisible && (
+            <div className="row mb-4">
+              <div className="col">
+                <div className="card border-0 shadow-sm">
+                  <div className="card-body">
+                    <div className="row">
+                      {/* Sort options */}
+                      <div className="col-md-6 mb-3">
+                        <label className="form-label">Sıralama</label>
+                        <select 
+                          className="form-select"
+                          value={sortBy}
+                          onChange={(e) => setSortBy(e.target.value)}
+                        >
+                          <option value="title">İsme göre (A-Z)</option>
+                          <option value="date">Tarihe göre (Yeni-Eski)</option>
+                          <option value="rating">Puanınıza göre (Yüksek-Düşük)</option>
+                          <option value="popularity">Popülerliğe göre</option>
+                        </select>
+                      </div>
+                      
+                      {/* Genre filter */}
+                      <div className="col-md-6 mb-3">
+                        <label className="form-label">Tür</label>
+                        <select 
+                          className="form-select"
+                          value={filterGenre}
+                          onChange={(e) => setFilterGenre(e.target.value)}
+                        >
+                          <option value="">Tüm Türler</option>
+                          {allGenres.map(genre => (
+                            <option key={genre} value={genre}>
+                              {genre}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+                    
+                    {/* Active filters summary */}
+                    {(filterGenre || searchTerm) && (
+                      <div className="mt-2">
+                        <div className="d-flex align-items-center gap-2">
+                          <Filter size={16} className="text-primary" />
+                          <strong>Aktif Filtreler:</strong>
+                          {searchTerm && (
+                            <span className="badge bg-primary me-2">
+                              "{searchTerm}"
+                            </span>
+                          )}
+                          {filterGenre && (
+                            <span className="badge bg-primary me-2">
+                              {filterGenre}
+                            </span>
+                          )}
+                          <button 
+                            className="btn btn-sm btn-outline-secondary ms-auto"
+                            onClick={() => {
+                              setSearchTerm('');
+                              setFilterGenre('');
+                            }}
+                          >
+                            Filtreleri Temizle
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
             </div>
-          ))}
-        </div>
+          )}
+        </>
       )}
       
-      {/* Movie Details Modal */}
-      <MovieDetailsModal
-        movie={selectedMovie}
-        isOpen={isModalOpen}
-        onClose={handleCloseModal}
-        isFavorite={(id) => true}
-        onToggleFavorite={onToggleFavorite}
-        isWatched={selectedMovie ? watchedMovies.includes(selectedMovie.id) : false}
-        onToggleWatched={toggleWatched}
-        userRating={selectedMovie ? ratings[selectedMovie.id] || 0 : 0}
-        onRateMovie={rateMovie}
-      />
+      {/* Empty state */}
+      {favorites.length === 0 ? (
+        <div className="text-center py-5">
+          <div className="mb-4">
+            <Heart size={64} className="text-secondary opacity-50" />
+          </div>
+          <h3>Favori film listeniz boş</h3>
+          <p className="text-muted">
+            Beğendiğiniz filmleri favorilere ekleyin ve burada listeleyin
+          </p>
+        </div>
+      ) : filteredFavorites.length === 0 ? (
+        <div className="alert alert-warning text-center">
+          <p className="mb-0">Arama kriterlerine uygun film bulunamadı.</p>
+        </div>
+      ) : (
+        <>
+          {/* Results count */}
+          <div className="d-flex justify-content-between align-items-center mb-3">
+            <p className="text-muted mb-0">
+              {filteredFavorites.length} film bulundu
+            </p>
+          </div>
+          
+          {/* Movies grid view */}
+          {viewMode === 'grid' ? (
+            <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4 mb-4">
+              {filteredFavorites.map(movie => (
+                <div className="col" key={movie.id}>
+                  <MovieCard
+                    movie={movie}
+                    isFavorite={isFavorite}
+                    onToggleFavorite={onToggleFavorite}
+                    onOpenDetails={onOpenDetails}
+                    isWatched={watchedMovies.some(m => m.id === movie.id)}
+                    toggleWatched={() => toggleWatched(movie)}
+                    userRating={ratings[movie.id] || 0}
+                  />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="mb-4">
+              {filteredFavorites.map(movie => (
+                <MovieListItem key={movie.id} movie={movie} />
+              ))}
+            </div>
+          )}
+        </>
+      )}
     </div>
   );
 };
