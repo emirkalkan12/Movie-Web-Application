@@ -356,7 +356,7 @@ function App() {
             <div className="row">
               <div className="col-md-6">
                 <h5 className="mb-3">MovieApp</h5>
-                <p className="text-muted">
+                <p className="text-light-emphasis">
                   Film tutkunları için geliştirilmiş, filmleri keşfetmenize, 
                   favorilere eklemenize ve izleme listenizi yönetmenize yardımcı olan
                   bir uygulamadır.
@@ -365,23 +365,23 @@ function App() {
               <div className="col-md-3">
                 <h5 className="mb-3">Bağlantılar</h5>
                 <ul className="list-unstyled">
-                  <li><Link className="text-decoration-none text-muted" to="/">Ana Sayfa</Link></li>
-                  <li><Link className="text-decoration-none text-muted" to="/discover">Keşfet</Link></li>
-                  <li><Link className="text-decoration-none text-muted" to="/watchlist">İzleme Listesi</Link></li>
-                  <li><Link className="text-decoration-none text-muted" to="/favorites">Favoriler</Link></li>
-                  <li><Link className="text-decoration-none text-muted" to="/watched">İzlenenler</Link></li>
+                  <li><Link className="text-decoration-none text-light-emphasis" to="/">Ana Sayfa</Link></li>
+                  <li><Link className="text-decoration-none text-light-emphasis" to="/discover">Keşfet</Link></li>
+                  <li><Link className="text-decoration-none text-light-emphasis" to="/watchlist">İzleme Listesi</Link></li>
+                  <li><Link className="text-decoration-none text-light-emphasis" to="/favorites">Favoriler</Link></li>
+                  <li><Link className="text-decoration-none text-light-emphasis" to="/watched">İzlenenler</Link></li>
                 </ul>
               </div>
               <div className="col-md-3">
                 <h5 className="mb-3">API</h5>
-                <p className="text-muted small">
+                <p className="text-light-emphasis small">
                   Bu uygulama, The Movie Database (TMDb) API'sini kullanmaktadır.
                   Film verileri TMDb tarafından sağlanmaktadır.
                 </p>
               </div>
             </div>
-            <hr className="my-4" />
-            <div className="text-center text-muted small">
+            <hr className="my-4 border-secondary" />
+            <div className="text-center text-light-emphasis small">
               <p>© {new Date().getFullYear()} MovieApp. Tüm Hakları Saklıdır.</p>
             </div>
           </div>
